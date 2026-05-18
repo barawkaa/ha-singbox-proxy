@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sing-box Proxy</title>
+  <title>Прокси от Бориса</title>
   <style>
     :root {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -298,7 +298,7 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>Sing-box Proxy</h1>
+    <h1>Прокси от Бориса</h1>
     <div class="muted">Встроенная панель управления sing-box через Home Assistant Ingress.</div>
 
     <div class="tabs">
@@ -320,6 +320,28 @@
             </span>
           </div>
           <div class="small muted api-url" id="apiBase"></div>
+        </div>
+
+        <div class="card">
+          <h2>Текущий сервер</h2>
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Режим</div>
+              <div class="value" id="currentMode">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Сервер</div>
+              <div class="value" id="currentServer">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Пинг</div>
+              <div class="value" id="currentPing">—</div>
+            </div>
+          </div>
+          <div class="row">
+            <button id="pingNowBtn">Проверить пинг</button>
+          </div>
+          <div class="small muted" id="currentServerNote">—</div>
         </div>
 
         <div class="card">
@@ -396,7 +418,7 @@
         <div class="card full">
           <h2>Клиенты</h2>
           <div class="small muted">
-            Здесь клиенты группируются по IP-адресу. Геолокация определяется внешним сервисом и может быть неточной.
+            Клиенты группируются по IP-адресу. Геолокация определяется через внешний IP-сервис и может быть неточной.
           </div>
           <div class="row">
             <button id="refreshClientsBtn">Обновить клиентов</button>
@@ -480,7 +502,7 @@
     const storageKeys = {
       clients: "singbox_proxy_clients_v1",
       traffic: "singbox_proxy_traffic_v1",
-      geo: "singbox_proxy_geo_v1"
+      geo: "singbox_proxy_geo_v2"
     };
 
     function getApiBase() {
@@ -497,6 +519,10 @@
       statusDot: document.getElementById("statusDot"),
       statusText: document.getElementById("statusText"),
       apiBase: document.getElementById("apiBase"),
+      currentMode: document.getElementById("currentMode"),
+      currentServer: document.getElementById("currentServer"),
+      currentPing: document.getElementById("currentPing"),
+      currentServerNote: document.getElementById("currentServerNote"),
       groupSelect: document.getElementById("groupSelect"),
       proxySelect: document.getElementById("proxySelect"),
       serversTable: document.getElementById("serversTable"),
@@ -523,6 +549,7 @@
 
     let selectedGroupName = "";
     let lastConnections = [];
+    let lastProxies = {};
 
     els.apiBase.textContent = "API: " + apiBase;
 
@@ -643,6 +670,19 @@
       return "";
     }
 
+    function getLastDelay(proxy) {
+      if (!proxy) return null;
+
+      if (Array.isArray(proxy.history) && proxy.history.length > 0) {
+        const last = proxy.history[proxy.history.length - 1];
+        if (last && Number(last.delay) > 0) return Number(last.delay);
+      }
+
+      if (Number(proxy.delay) > 0) return Number(proxy.delay);
+
+      return null;
+    }
+
     function escapeHtml(str) {
       return String(str ?? "")
         .replaceAll("&", "&amp;")
@@ -705,11 +745,40 @@
       }
     }
 
+    function renderCurrentServer(proxies) {
+      const group = proxies[selectedGroupName];
+      if (!group) {
+        els.currentMode.textContent = "—";
+        els.currentServer.textContent = "—";
+        els.currentPing.textContent = "—";
+        els.currentServerNote.textContent = "Группа управления не выбрана.";
+        return;
+      }
+
+      const selected = currentProxy(group) || "—";
+
+      let actual = selected;
+      let note = "Ручной режим.";
+
+      if (selected === "auto" && proxies.auto) {
+        actual = currentProxy(proxies.auto) || "—";
+        note = "Режим auto: sing-box сам выбрал сервер с лучшей задержкой.";
+      }
+
+      const actualProxy = proxies[actual];
+      const delay = getLastDelay(actualProxy);
+
+      els.currentMode.textContent = selected;
+      els.currentServer.textContent = actual;
+      els.currentPing.textContent = delay ? delay + " мс" : "—";
+      els.currentServerNote.textContent = note;
+    }
+
     function renderDiagnostics(proxies, rawData) {
       const keys = Object.keys(proxies);
       const groups = keys.filter(name => isGroup(proxies[name]));
 
-      els.diagnostics.innerHTML = `
+      diagnostics.innerHTML = `
         <div class="small">
           <div>Тип ответа API: <b>${escapeHtml(typeof rawData)}</b></div>
           <div>Найдено объектов в API: <b>${keys.length}</b></div>
@@ -733,10 +802,13 @@
           throw new Error("API /proxies вернул неожиданный формат.");
         }
 
+        lastProxies = proxies;
+
         if (!selectedGroupName) selectedGroupName = chooseDefaultGroup(proxies);
 
         renderGroupSelector(proxies);
         renderDiagnostics(proxies, data);
+        renderCurrentServer(proxies);
 
         const group = proxies[selectedGroupName];
 
@@ -765,7 +837,7 @@
         for (const name of names) {
           const item = proxies[name] || {};
           const active = name === selected;
-          const delay = normalizeDelay(item.history?.[item.history.length - 1]?.delay ?? item.delay);
+          const delay = normalizeDelay(getLastDelay(item));
 
           let note = "";
           if (name === "auto" && proxies.auto) {
@@ -892,39 +964,65 @@
       renderTraffic();
     }
 
+    async function geoLookupByIpWhoIs(ip) {
+      const res = await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`, { cache: "force-cache" });
+      const data = await res.json();
+
+      if (!data || data.success === false) {
+        throw new Error("ipwho.is не вернул геолокацию");
+      }
+
+      return {
+        country: data.country || "—",
+        region: data.region || "—",
+        city: data.city || "",
+        isp: data.connection?.isp || data.connection?.org || ""
+      };
+    }
+
+    async function geoLookupByIpApiCo(ip) {
+      const res = await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`, { cache: "force-cache" });
+      const data = await res.json();
+
+      if (!data || data.error) {
+        throw new Error("ipapi.co не вернул геолокацию");
+      }
+
+      return {
+        country: data.country_name || "—",
+        region: data.region || "—",
+        city: data.city || "",
+        isp: data.org || data.asn || ""
+      };
+    }
+
     async function geoLookup(ip) {
       if (isPrivateIp(ip)) {
         return { country: "Локальный", region: "LAN", city: "", isp: "" };
       }
 
       const geoCache = loadJson(storageKeys.geo, {});
+
       if (geoCache[ip] && Date.now() - geoCache[ip].ts < 7 * 24 * 3600 * 1000) {
         return geoCache[ip].data;
       }
 
+      let info;
+
       try {
-        const res = await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`, { cache: "force-cache" });
-        const data = await res.json();
-
-        const info = data && data.success !== false ? {
-          country: data.country || "—",
-          region: data.region || "—",
-          city: data.city || "",
-          isp: data.connection?.isp || data.connection?.org || ""
-        } : {
-          country: "—",
-          region: "—",
-          city: "",
-          isp: ""
-        };
-
-        geoCache[ip] = { ts: Date.now(), data: info };
-        saveJson(storageKeys.geo, geoCache);
-
-        return info;
+        info = await geoLookupByIpWhoIs(ip);
       } catch (_) {
-        return { country: "—", region: "—", city: "", isp: "" };
+        try {
+          info = await geoLookupByIpApiCo(ip);
+        } catch (_) {
+          info = { country: "—", region: "—", city: "", isp: "геолокация недоступна" };
+        }
       }
+
+      geoCache[ip] = { ts: Date.now(), data: info };
+      saveJson(storageKeys.geo, geoCache);
+
+      return info;
     }
 
     async function buildClients(connections) {
@@ -1258,6 +1356,7 @@
       await loadConnections();
     });
     document.getElementById("delayBtn").addEventListener("click", testDelays);
+    document.getElementById("pingNowBtn").addEventListener("click", testDelays);
     document.getElementById("refreshConnectionsBtn").addEventListener("click", loadConnections);
     document.getElementById("refreshClientsBtn").addEventListener("click", loadConnections);
     document.getElementById("closeAllBtn").addEventListener("click", closeAllConnections);
