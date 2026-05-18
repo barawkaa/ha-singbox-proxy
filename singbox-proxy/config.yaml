@@ -1,5 +1,5 @@
 name: "Sing-box Proxy"
-version: "1.3.7"
+version: "1.3.8"
 slug: "singbox_proxy"
 description: "HTTP/SOCKS proxy through configurable sing-box servers"
 arch:
