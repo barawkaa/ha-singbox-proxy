@@ -24,8 +24,8 @@ options:
   socks_proxy_port: 2080
   socks_auth_enabled: false
   http_auth_enabled: false
-  proxy_username: "boris"
-  proxy_password: "ChangeThisProxyPassword_2026"
+  proxy_username: "user"
+  proxy_password: "password"
   urltest_interval: "2m"
   urltest_tolerance: 50
   log_level: "info"
