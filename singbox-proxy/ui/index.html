@@ -8,17 +8,28 @@
     :root {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color-scheme: dark;
+      --bg: #111827;
+      --card: #1f2937;
+      --card2: #111827;
+      --border: #374151;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --blue: #2563eb;
+      --blue2: #1d4ed8;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #fde68a;
     }
 
     body {
       margin: 0;
       padding: 16px;
-      background: #111827;
-      color: #e5e7eb;
+      background: var(--bg);
+      color: var(--text);
     }
 
     .wrap {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
     }
 
@@ -27,39 +38,85 @@
       font-size: 24px;
     }
 
+    h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
     .muted {
-      color: #9ca3af;
+      color: var(--muted);
       font-size: 14px;
+    }
+
+    .small {
+      font-size: 13px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--border);
+      background: var(--card2);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: white;
+    }
+
+    .tab {
+      display: none;
+      margin-top: 16px;
+    }
+
+    .tab.active {
+      display: block;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 12px;
-      margin-top: 16px;
     }
 
     .card {
-      background: #1f2937;
-      border: 1px solid #374151;
+      background: var(--card);
+      border: 1px solid var(--border);
       border-radius: 14px;
       padding: 14px;
       box-shadow: 0 10px 25px rgba(0,0,0,.18);
       overflow: hidden;
     }
 
-    .card h2 {
-      margin: 0 0 10px;
-      font-size: 18px;
+    .full {
+      grid-column: 1 / -1;
     }
 
-    button, select {
+    button, select, input {
       border: 1px solid #4b5563;
-      background: #111827;
-      color: #e5e7eb;
+      background: var(--card2);
+      color: var(--text);
       border-radius: 10px;
       padding: 9px 11px;
       font-size: 14px;
+    }
+
+    input {
+      width: 140px;
+      box-sizing: border-box;
     }
 
     button {
@@ -71,13 +128,23 @@
     }
 
     button.primary {
-      background: #2563eb;
-      border-color: #2563eb;
+      background: var(--blue);
+      border-color: var(--blue);
       color: white;
     }
 
     button.primary:hover {
-      background: #1d4ed8;
+      background: var(--blue2);
+    }
+
+    button.danger {
+      background: #7f1d1d;
+      border-color: #991b1b;
+      color: white;
+    }
+
+    button.danger:hover {
+      background: #991b1b;
     }
 
     .row {
@@ -94,7 +161,7 @@
       gap: 6px;
       border-radius: 999px;
       padding: 5px 9px;
-      background: #374151;
+      background: var(--border);
       font-size: 13px;
     }
 
@@ -102,11 +169,11 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #ef4444;
+      background: var(--red);
     }
 
     .dot.ok {
-      background: #22c55e;
+      background: var(--green);
     }
 
     .api-url {
@@ -126,7 +193,7 @@
     }
 
     th, td {
-      border-bottom: 1px solid #374151;
+      border-bottom: 1px solid var(--border);
       padding: 9px;
       text-align: left;
       font-size: 14px;
@@ -134,7 +201,7 @@
     }
 
     th {
-      color: #9ca3af;
+      color: var(--muted);
       font-weight: 600;
     }
 
@@ -158,17 +225,13 @@
       color: #86efac;
     }
 
-    .small {
-      font-size: 13px;
-    }
-
-    .full {
-      grid-column: 1 / -1;
+    .warntext {
+      color: var(--yellow);
     }
 
     code {
-      background: #111827;
-      border: 1px solid #374151;
+      background: var(--card2);
+      border: 1px solid var(--border);
       border-radius: 8px;
       padding: 2px 5px;
     }
@@ -181,15 +244,15 @@
     }
 
     .stat {
-      background: #111827;
-      border: 1px solid #374151;
+      background: var(--card2);
+      border: 1px solid var(--border);
       border-radius: 12px;
       padding: 8px 10px;
-      min-width: 120px;
+      min-width: 130px;
     }
 
     .stat .label {
-      color: #9ca3af;
+      color: var(--muted);
       font-size: 12px;
     }
 
@@ -198,98 +261,215 @@
       font-weight: 700;
       margin-top: 2px;
     }
+
+    .progress-wrap {
+      width: 100%;
+      height: 16px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--blue);
+      transition: width .2s ease;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--card2);
+      font-size: 12px;
+      margin: 2px 4px 2px 0;
+    }
+
+    .sites {
+      max-width: 360px;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Sing-box Proxy</h1>
-    <div class="muted">
-      Встроенная панель управления sing-box через Home Assistant Ingress.
+    <div class="muted">Встроенная панель управления sing-box через Home Assistant Ingress.</div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="overview">Обзор</button>
+      <button class="tab-btn" data-tab="servers">Серверы</button>
+      <button class="tab-btn" data-tab="clients">Клиенты</button>
+      <button class="tab-btn" data-tab="traffic">Трафик</button>
+      <button class="tab-btn" data-tab="diagnostics">Диагностика</button>
     </div>
 
-    <div class="grid">
-      <div class="card">
-        <h2>Статус</h2>
-        <div class="row">
-          <span class="status">
-            <span id="statusDot" class="dot"></span>
-            <span id="statusText">Проверка...</span>
-          </span>
-        </div>
-        <div class="small muted api-url" id="apiBase"></div>
-      </div>
-
-      <div class="card">
-        <h2>Группа управления</h2>
-        <div class="row">
-          <label for="groupSelect">Группа:</label>
-          <select id="groupSelect"></select>
-        </div>
-        <div class="small muted">
-          Обычно это <code>Proxy</code> или <code>GLOBAL</code>. Интерфейс выберет подходящую группу автоматически.
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Основной режим</h2>
-        <div class="row">
-          <label for="proxySelect">Выбор:</label>
-          <select id="proxySelect"></select>
-        </div>
-        <div class="row">
-          <button class="primary" id="applyBtn">Применить</button>
-          <button id="refreshBtn">Обновить</button>
-          <button id="delayBtn">Проверить задержки</button>
-        </div>
-        <div class="small muted">
-          <b>auto</b> — автоматический выбор лучшего сервера. Конкретный сервер — ручной режим.
-        </div>
-      </div>
-
-      <div class="card full">
-        <h2>Активные подключения</h2>
-        <div class="small muted">
-          Показываются текущие живые соединения через прокси. Закрытые соединения в этой версии не сохраняются в историю.
-        </div>
-        <div class="stats">
-          <div class="stat">
-            <div class="label">Соединений</div>
-            <div class="value" id="connectionsCount">—</div>
+    <section id="tab-overview" class="tab active">
+      <div class="grid">
+        <div class="card">
+          <h2>Статус</h2>
+          <div class="row">
+            <span class="status">
+              <span id="statusDot" class="dot"></span>
+              <span id="statusText">Проверка...</span>
+            </span>
           </div>
-          <div class="stat">
-            <div class="label">Клиентов</div>
-            <div class="value" id="clientsCount">—</div>
-          </div>
-          <div class="stat">
-            <div class="label">Download</div>
-            <div class="value" id="downloadTotal">—</div>
-          </div>
-          <div class="stat">
-            <div class="label">Upload</div>
-            <div class="value" id="uploadTotal">—</div>
-          </div>
+          <div class="small muted api-url" id="apiBase"></div>
         </div>
-        <div class="row">
-          <button id="refreshConnectionsBtn">Обновить подключения</button>
+
+        <div class="card">
+          <h2>Группа управления</h2>
+          <div class="row">
+            <label for="groupSelect">Группа:</label>
+            <select id="groupSelect"></select>
+          </div>
+          <div class="small muted">Обычно это <code>Proxy</code> или <code>GLOBAL</code>.</div>
         </div>
-        <div id="connectionsTable">Загрузка...</div>
-      </div>
 
-      <div class="card full">
-        <h2>Серверы</h2>
-        <div id="serversTable">Загрузка...</div>
-      </div>
+        <div class="card">
+          <h2>Основной режим</h2>
+          <div class="row">
+            <label for="proxySelect">Выбор:</label>
+            <select id="proxySelect"></select>
+          </div>
+          <div class="row">
+            <button class="primary" id="applyBtn">Применить</button>
+            <button id="refreshBtn">Обновить всё</button>
+            <button id="delayBtn">Проверить задержки</button>
+          </div>
+          <div class="small muted"><b>auto</b> — автоматический выбор лучшего сервера.</div>
+        </div>
 
-      <div class="card full">
-        <h2>Диагностика</h2>
-        <div id="diagnostics" class="muted">Загрузка...</div>
+        <div class="card full">
+          <h2>Сводка подключений</h2>
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Активных соединений</div>
+              <div class="value" id="connectionsCount">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Активных клиентов</div>
+              <div class="value" id="clientsCount">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Download сейчас</div>
+              <div class="value" id="downloadTotal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Upload сейчас</div>
+              <div class="value" id="uploadTotal">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Учтено трафика</div>
+              <div class="value" id="trafficUsedShort">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Осталось</div>
+              <div class="value" id="trafficLeftShort">—</div>
+            </div>
+          </div>
+          <div class="row">
+            <button id="refreshConnectionsBtn">Обновить подключения</button>
+            <button class="danger" id="closeAllBtn">Отключить всех</button>
+          </div>
+          <div class="small muted" id="connectionsUpdatedAt">Последнее обновление: —</div>
+        </div>
       </div>
+    </section>
 
-      <div class="card full">
-        <h2>Сообщения</h2>
-        <div id="message" class="muted">Готово.</div>
+    <section id="tab-servers" class="tab">
+      <div class="grid">
+        <div class="card full">
+          <h2>Серверы</h2>
+          <div id="serversTable">Загрузка...</div>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <section id="tab-clients" class="tab">
+      <div class="grid">
+        <div class="card full">
+          <h2>Клиенты</h2>
+          <div class="small muted">
+            Здесь клиенты группируются по IP-адресу. Геолокация определяется внешним сервисом и может быть неточной.
+          </div>
+          <div class="row">
+            <button id="refreshClientsBtn">Обновить клиентов</button>
+            <button class="danger" id="closeAllBtn2">Отключить всех</button>
+          </div>
+          <div id="clientsTable">Загрузка...</div>
+        </div>
+
+        <div class="card full">
+          <h2>Активные соединения</h2>
+          <div id="connectionsTable">Загрузка...</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-traffic" class="tab">
+      <div class="grid">
+        <div class="card full">
+          <h2>Лимит трафика</h2>
+          <div class="small muted">
+            Без backend это локальный счётчик в браузере Home Assistant. Для точного учёта по всем устройствам позже нужен серверный учёт или API провайдера.
+          </div>
+
+          <div class="row">
+            <label>Лимит, GB:</label>
+            <input id="trafficLimitInput" type="number" min="0" step="0.1" placeholder="например 100" />
+            <label>Уже использовано, GB:</label>
+            <input id="trafficUsedInput" type="number" min="0" step="0.1" placeholder="например 12.5" />
+            <button class="primary" id="saveTrafficBtn">Сохранить</button>
+            <button class="danger" id="resetTrafficBtn">Сбросить счётчик</button>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="label">Всего лимит</div>
+              <div class="value" id="trafficLimit">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Использовано</div>
+              <div class="value" id="trafficUsed">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Осталось</div>
+              <div class="value" id="trafficLeft">—</div>
+            </div>
+            <div class="stat">
+              <div class="label">Использовано, %</div>
+              <div class="value" id="trafficPercent">—</div>
+            </div>
+          </div>
+
+          <div class="progress-wrap">
+            <div class="progress-bar" id="trafficProgress"></div>
+          </div>
+
+          <div class="small muted" id="trafficNote" style="margin-top: 10px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-diagnostics" class="tab">
+      <div class="grid">
+        <div class="card full">
+          <h2>Диагностика</h2>
+          <div id="diagnostics" class="muted">Загрузка...</div>
+        </div>
+
+        <div class="card full">
+          <h2>Сообщения</h2>
+          <div id="message" class="muted">Готово.</div>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script src="config.js"></script>
@@ -297,42 +477,58 @@
     const config = window.SINGBOX_DASHBOARD_CONFIG || {};
     const secret = config.secret || "";
 
+    const storageKeys = {
+      clients: "singbox_proxy_clients_v1",
+      traffic: "singbox_proxy_traffic_v1",
+      geo: "singbox_proxy_geo_v1"
+    };
+
     function getApiBase() {
       const path = window.location.pathname;
       const marker = "/ui";
       const idx = path.indexOf(marker);
-
-      if (idx >= 0) {
-        return window.location.origin + path.slice(0, idx);
-      }
-
+      if (idx >= 0) return window.location.origin + path.slice(0, idx);
       return window.location.origin;
     }
 
     const apiBase = getApiBase();
 
-    const statusDot = document.getElementById("statusDot");
-    const statusText = document.getElementById("statusText");
-    const apiBaseEl = document.getElementById("apiBase");
-    const groupSelect = document.getElementById("groupSelect");
-    const proxySelect = document.getElementById("proxySelect");
-    const serversTable = document.getElementById("serversTable");
-    const diagnostics = document.getElementById("diagnostics");
-    const message = document.getElementById("message");
-
-    const connectionsCount = document.getElementById("connectionsCount");
-    const clientsCount = document.getElementById("clientsCount");
-    const downloadTotal = document.getElementById("downloadTotal");
-    const uploadTotal = document.getElementById("uploadTotal");
-    const connectionsTable = document.getElementById("connectionsTable");
+    const els = {
+      statusDot: document.getElementById("statusDot"),
+      statusText: document.getElementById("statusText"),
+      apiBase: document.getElementById("apiBase"),
+      groupSelect: document.getElementById("groupSelect"),
+      proxySelect: document.getElementById("proxySelect"),
+      serversTable: document.getElementById("serversTable"),
+      diagnostics: document.getElementById("diagnostics"),
+      message: document.getElementById("message"),
+      connectionsCount: document.getElementById("connectionsCount"),
+      clientsCount: document.getElementById("clientsCount"),
+      downloadTotal: document.getElementById("downloadTotal"),
+      uploadTotal: document.getElementById("uploadTotal"),
+      connectionsTable: document.getElementById("connectionsTable"),
+      clientsTable: document.getElementById("clientsTable"),
+      connectionsUpdatedAt: document.getElementById("connectionsUpdatedAt"),
+      trafficLimitInput: document.getElementById("trafficLimitInput"),
+      trafficUsedInput: document.getElementById("trafficUsedInput"),
+      trafficLimit: document.getElementById("trafficLimit"),
+      trafficUsed: document.getElementById("trafficUsed"),
+      trafficLeft: document.getElementById("trafficLeft"),
+      trafficPercent: document.getElementById("trafficPercent"),
+      trafficProgress: document.getElementById("trafficProgress"),
+      trafficNote: document.getElementById("trafficNote"),
+      trafficUsedShort: document.getElementById("trafficUsedShort"),
+      trafficLeftShort: document.getElementById("trafficLeftShort")
+    };
 
     let selectedGroupName = "";
+    let lastConnections = [];
 
-    apiBaseEl.textContent = "API: " + apiBase;
+    els.apiBase.textContent = "API: " + apiBase;
 
     function setMessage(text, isError = false) {
-      message.textContent = text;
-      message.className = isError ? "error" : "muted";
+      els.message.textContent = text;
+      els.message.className = isError ? "error" : "muted";
     }
 
     function headers() {
@@ -342,12 +538,16 @@
     }
 
     async function api(path, options = {}) {
-      const res = await fetch(apiBase + path, {
+      const separator = path.includes("?") ? "&" : "?";
+      const antiCachePath = path + separator + "_t=" + Date.now();
+
+      const res = await fetch(apiBase + antiCachePath, {
         ...options,
         headers: {
           ...headers(),
           ...(options.headers || {})
-        }
+        },
+        cache: "no-store"
       });
 
       const text = await res.text();
@@ -356,46 +556,62 @@
         throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
       }
 
-      if (!text) {
-        return null;
-      }
+      if (!text) return null;
 
       try {
         return JSON.parse(text);
       } catch (e) {
-        throw new Error(
-          "API вернул не JSON, а текст. Первые символы ответа: " +
-          text.slice(0, 300)
-        );
+        throw new Error("API вернул не JSON, а текст. Первые символы ответа: " + text.slice(0, 300));
       }
+    }
+
+    function saveJson(key, data) {
+      localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    function loadJson(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (_) {
+        return fallback;
+      }
+    }
+
+    function formatBytes(bytes) {
+      const n = Number(bytes || 0);
+      if (n < 1024) return n + " B";
+      if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+      if (n < 1024 * 1024 * 1024) return (n / 1024 / 1024).toFixed(1) + " MB";
+      return (n / 1024 / 1024 / 1024).toFixed(2) + " GB";
+    }
+
+    function gbToBytes(gb) {
+      return Number(gb || 0) * 1024 * 1024 * 1024;
+    }
+
+    function bytesToGb(bytes) {
+      return Number(bytes || 0) / 1024 / 1024 / 1024;
+    }
+
+    function formatDateTime(ts) {
+      if (!ts) return "—";
+      return new Date(ts).toLocaleString("ru-RU");
+    }
+
+    function formatDurationMs(ms) {
+      if (!Number.isFinite(ms) || ms < 0) return "—";
+      const sec = Math.floor(ms / 1000);
+      if (sec < 60) return sec + " сек";
+      if (sec < 3600) return Math.floor(sec / 60) + " мин";
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      return h + " ч " + m + " мин";
     }
 
     function normalizeDelay(delay) {
       if (delay === undefined || delay === null || delay === 0) return "—";
       return delay + " мс";
-    }
-
-    function formatBytes(bytes) {
-      const n = Number(bytes || 0);
-
-      if (n < 1024) return n + " B";
-      if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
-      if (n < 1024 * 1024 * 1024) return (n / 1024 / 1024).toFixed(1) + " MB";
-
-      return (n / 1024 / 1024 / 1024).toFixed(2) + " GB";
-    }
-
-    function formatDuration(start) {
-      if (!start) return "—";
-
-      const startMs = new Date(start).getTime();
-      if (!Number.isFinite(startMs)) return "—";
-
-      const sec = Math.max(0, Math.floor((Date.now() - startMs) / 1000));
-      if (sec < 60) return sec + " сек";
-      if (sec < 3600) return Math.floor(sec / 60) + " мин";
-
-      return Math.floor(sec / 3600) + " ч " + Math.floor((sec % 3600) / 60) + " мин";
     }
 
     function proxyNames(proxy) {
@@ -410,8 +626,7 @@
     }
 
     function isGroup(proxy) {
-      const names = proxyNames(proxy);
-      return names.length > 0;
+      return proxyNames(proxy).length > 0;
     }
 
     function chooseDefaultGroup(proxies) {
@@ -424,275 +639,8 @@
       });
 
       if (groupNames.length > 0) return groupNames[0];
-
       if (proxies.auto && isGroup(proxies.auto)) return "auto";
-
       return "";
-    }
-
-    function renderGroupSelector(proxies) {
-      const groupNames = Object.keys(proxies).filter(name => isGroup(proxies[name]));
-
-      groupSelect.innerHTML = "";
-
-      for (const name of groupNames) {
-        const option = document.createElement("option");
-        option.value = name;
-        option.textContent = name;
-        if (name === selectedGroupName) option.selected = true;
-        groupSelect.appendChild(option);
-      }
-
-      if (!selectedGroupName || !proxies[selectedGroupName]) {
-        selectedGroupName = chooseDefaultGroup(proxies);
-        groupSelect.value = selectedGroupName;
-      }
-    }
-
-    function renderDiagnostics(proxies, rawData) {
-      const keys = Object.keys(proxies);
-      const groups = keys.filter(name => isGroup(proxies[name]));
-
-      diagnostics.innerHTML = `
-        <div class="small">
-          <div>Тип ответа API: <b>${escapeHtml(typeof rawData)}</b></div>
-          <div>Найдено объектов в API: <b>${keys.length}</b></div>
-          <div>Группы: <b>${escapeHtml(groups.join(", ") || "не найдены")}</b></div>
-          <div>Текущая группа управления: <b>${escapeHtml(selectedGroupName || "не выбрана")}</b></div>
-          <div>Первые ключи API: <b>${escapeHtml(keys.slice(0, 20).join(", "))}</b></div>
-        </div>
-      `;
-    }
-
-    async function load() {
-      try {
-        const data = await api("/proxies");
-
-        let proxies;
-
-        if (data && data.proxies && typeof data.proxies === "object") {
-          proxies = data.proxies;
-        } else if (data && typeof data === "object") {
-          proxies = data;
-        } else {
-          throw new Error("API /proxies вернул неожиданный формат.");
-        }
-
-        if (!selectedGroupName) {
-          selectedGroupName = chooseDefaultGroup(proxies);
-        }
-
-        renderGroupSelector(proxies);
-        renderDiagnostics(proxies, data);
-
-        const group = proxies[selectedGroupName];
-
-        if (!group || !isGroup(group)) {
-          throw new Error("Не найдена подходящая группа управления. Смотри блок диагностики выше.");
-        }
-
-        statusDot.classList.add("ok");
-        statusText.textContent = "Подключено";
-
-        const names = proxyNames(group);
-        const selected = currentProxy(group);
-
-        proxySelect.innerHTML = "";
-
-        for (const name of names) {
-          const option = document.createElement("option");
-          option.value = name;
-          option.textContent = name;
-          if (name === selected) option.selected = true;
-          proxySelect.appendChild(option);
-        }
-
-        const rows = [];
-
-        for (const name of names) {
-          const item = proxies[name] || {};
-          const active = name === selected;
-          const delay = normalizeDelay(item.history?.[item.history.length - 1]?.delay ?? item.delay);
-
-          let note = "";
-
-          if (name === "auto" && proxies.auto) {
-            note = "выбран внутри auto: " + (currentProxy(proxies.auto) || "—");
-          } else if (item.type) {
-            note = item.type;
-          }
-
-          rows.push(`
-            <tr class="${active ? "active" : ""}">
-              <td class="tag">${escapeHtml(name)}</td>
-              <td>${active ? "<span class='oktext'>выбран</span>" : ""}</td>
-              <td>${escapeHtml(delay)}</td>
-              <td>${escapeHtml(note)}</td>
-              <td>
-                <button onclick="selectProxy('${escapeAttr(name)}')">Выбрать</button>
-              </td>
-            </tr>
-          `);
-        }
-
-        serversTable.innerHTML = `
-          <table>
-            <thead>
-              <tr>
-                <th>Сервер</th>
-                <th>Статус</th>
-                <th>Задержка</th>
-                <th>Комментарий</th>
-                <th>Действие</th>
-              </tr>
-            </thead>
-            <tbody>${rows.join("")}</tbody>
-          </table>
-        `;
-
-        setMessage("Данные обновлены.");
-      } catch (e) {
-        statusDot.classList.remove("ok");
-        statusText.textContent = "Ошибка";
-        setMessage(e.message || String(e), true);
-      }
-    }
-
-    async function selectProxy(name) {
-      try {
-        if (!selectedGroupName) {
-          throw new Error("Группа управления не выбрана.");
-        }
-
-        await api(`/proxies/${encodeURIComponent(selectedGroupName)}`, {
-          method: "PUT",
-          body: JSON.stringify({ name })
-        });
-
-        setMessage("Выбран режим/сервер: " + name);
-        await load();
-      } catch (e) {
-        setMessage(e.message || String(e), true);
-      }
-    }
-
-    async function testDelays() {
-      try {
-        setMessage("Проверяю задержки...");
-
-        const data = await api("/proxies");
-        const proxies = data.proxies || data;
-        const group = proxies[selectedGroupName] || proxies[chooseDefaultGroup(proxies)];
-
-        if (!group) {
-          throw new Error("Группа для проверки задержек не найдена.");
-        }
-
-        const names = proxyNames(group).filter(n => n !== "auto");
-
-        for (const name of names) {
-          try {
-            await api(`/proxies/${encodeURIComponent(name)}/delay?timeout=5000&url=${encodeURIComponent("https://www.gstatic.com/generate_204")}`);
-          } catch (_) {
-            // отдельный сервер может не ответить — это нормально
-          }
-        }
-
-        setMessage("Проверка задержек завершена.");
-        await load();
-      } catch (e) {
-        setMessage(e.message || String(e), true);
-      }
-    }
-
-    function extractConnections(data) {
-      if (Array.isArray(data)) return data;
-      if (data && Array.isArray(data.connections)) return data.connections;
-      return [];
-    }
-
-    async function loadConnections() {
-      try {
-        const data = await api("/connections");
-        const connections = extractConnections(data);
-
-        const clients = new Set();
-        let totalUpload = 0;
-        let totalDownload = 0;
-
-        const rows = connections.map(conn => {
-          const meta = conn.metadata || {};
-          const sourceIP = meta.sourceIP || meta.source_ip || conn.source || conn.sourceIP || "—";
-          const sourcePort = meta.sourcePort || meta.source_port || "";
-          const host = meta.host || meta.domain || meta.destinationIP || meta.destination_ip || conn.host || "—";
-          const destinationPort = meta.destinationPort || meta.destination_port || "";
-          const network = meta.network || conn.network || "—";
-          const upload = conn.upload || 0;
-          const download = conn.download || 0;
-          const chains = Array.isArray(conn.chains) ? conn.chains.join(" → ") : (conn.chains || "—");
-          const rule = conn.rule || "—";
-          const duration = formatDuration(conn.start);
-
-          if (sourceIP !== "—") clients.add(sourceIP);
-
-          totalUpload += Number(upload || 0);
-          totalDownload += Number(download || 0);
-
-          const source = sourcePort ? `${sourceIP}:${sourcePort}` : sourceIP;
-          const destination = destinationPort ? `${host}:${destinationPort}` : host;
-
-          return `
-            <tr>
-              <td class="tag">${escapeHtml(source)}</td>
-              <td class="tag">${escapeHtml(destination)}</td>
-              <td>${escapeHtml(network)}</td>
-              <td>${escapeHtml(formatBytes(download))}</td>
-              <td>${escapeHtml(formatBytes(upload))}</td>
-              <td>${escapeHtml(duration)}</td>
-              <td class="tag">${escapeHtml(chains)}</td>
-              <td>${escapeHtml(rule)}</td>
-            </tr>
-          `;
-        });
-
-        connectionsCount.textContent = String(connections.length);
-        clientsCount.textContent = String(clients.size);
-        downloadTotal.textContent = formatBytes(totalDownload);
-        uploadTotal.textContent = formatBytes(totalUpload);
-
-        if (rows.length === 0) {
-          connectionsTable.innerHTML = `
-            <div class="small muted" style="margin-top: 10px;">
-              Активных подключений сейчас нет. Открой сайт или приложение через прокси и нажми «Обновить подключения».
-            </div>
-          `;
-          return;
-        }
-
-        connectionsTable.innerHTML = `
-          <table>
-            <thead>
-              <tr>
-                <th>Клиент</th>
-                <th>Сайт / адрес</th>
-                <th>Сеть</th>
-                <th>Download</th>
-                <th>Upload</th>
-                <th>Время</th>
-                <th>Маршрут</th>
-                <th>Правило</th>
-              </tr>
-            </thead>
-            <tbody>${rows.join("")}</tbody>
-          </table>
-        `;
-      } catch (e) {
-        connectionsCount.textContent = "—";
-        clientsCount.textContent = "—";
-        downloadTotal.textContent = "—";
-        uploadTotal.textContent = "—";
-        connectionsTable.innerHTML = `<div class="error" style="margin-top: 10px;">${escapeHtml(e.message || String(e))}</div>`;
-      }
     }
 
     function escapeHtml(str) {
@@ -710,27 +658,618 @@
         .replaceAll("'", "\\'");
     }
 
-    groupSelect.addEventListener("change", async () => {
-      selectedGroupName = groupSelect.value;
-      await load();
+    function getConnId(conn) {
+      return conn.id || conn.ID || conn.uuid || conn.metadata?.uid || "";
+    }
+
+    function getSourceIP(conn) {
+      const meta = conn.metadata || {};
+      return meta.sourceIP || meta.source_ip || conn.source || conn.sourceIP || "—";
+    }
+
+    function getHost(conn) {
+      const meta = conn.metadata || {};
+      return meta.host || meta.domain || meta.destinationIP || meta.destination_ip || conn.host || "—";
+    }
+
+    function getDestinationPort(conn) {
+      const meta = conn.metadata || {};
+      return meta.destinationPort || meta.destination_port || "";
+    }
+
+    function isPrivateIp(ip) {
+      return /^10\./.test(ip) ||
+             /^192\.168\./.test(ip) ||
+             /^172\.(1[6-9]|2\d|3[0-1])\./.test(ip) ||
+             /^127\./.test(ip) ||
+             ip === "localhost" ||
+             ip === "—";
+    }
+
+    function renderGroupSelector(proxies) {
+      const groupNames = Object.keys(proxies).filter(name => isGroup(proxies[name]));
+
+      els.groupSelect.innerHTML = "";
+
+      for (const name of groupNames) {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        if (name === selectedGroupName) option.selected = true;
+        els.groupSelect.appendChild(option);
+      }
+
+      if (!selectedGroupName || !proxies[selectedGroupName]) {
+        selectedGroupName = chooseDefaultGroup(proxies);
+        els.groupSelect.value = selectedGroupName;
+      }
+    }
+
+    function renderDiagnostics(proxies, rawData) {
+      const keys = Object.keys(proxies);
+      const groups = keys.filter(name => isGroup(proxies[name]));
+
+      els.diagnostics.innerHTML = `
+        <div class="small">
+          <div>Тип ответа API: <b>${escapeHtml(typeof rawData)}</b></div>
+          <div>Найдено объектов в API: <b>${keys.length}</b></div>
+          <div>Группы: <b>${escapeHtml(groups.join(", ") || "не найдены")}</b></div>
+          <div>Текущая группа управления: <b>${escapeHtml(selectedGroupName || "не выбрана")}</b></div>
+          <div>Первые ключи API: <b>${escapeHtml(keys.slice(0, 20).join(", "))}</b></div>
+        </div>
+      `;
+    }
+
+    async function loadProxies() {
+      try {
+        const data = await api("/proxies");
+        let proxies;
+
+        if (data && data.proxies && typeof data.proxies === "object") {
+          proxies = data.proxies;
+        } else if (data && typeof data === "object") {
+          proxies = data;
+        } else {
+          throw new Error("API /proxies вернул неожиданный формат.");
+        }
+
+        if (!selectedGroupName) selectedGroupName = chooseDefaultGroup(proxies);
+
+        renderGroupSelector(proxies);
+        renderDiagnostics(proxies, data);
+
+        const group = proxies[selectedGroupName];
+
+        if (!group || !isGroup(group)) {
+          throw new Error("Не найдена подходящая группа управления. Смотри блок диагностики.");
+        }
+
+        els.statusDot.classList.add("ok");
+        els.statusText.textContent = "Подключено";
+
+        const names = proxyNames(group);
+        const selected = currentProxy(group);
+
+        els.proxySelect.innerHTML = "";
+
+        for (const name of names) {
+          const option = document.createElement("option");
+          option.value = name;
+          option.textContent = name;
+          if (name === selected) option.selected = true;
+          els.proxySelect.appendChild(option);
+        }
+
+        const rows = [];
+
+        for (const name of names) {
+          const item = proxies[name] || {};
+          const active = name === selected;
+          const delay = normalizeDelay(item.history?.[item.history.length - 1]?.delay ?? item.delay);
+
+          let note = "";
+          if (name === "auto" && proxies.auto) {
+            note = "выбран внутри auto: " + (currentProxy(proxies.auto) || "—");
+          } else if (item.type) {
+            note = item.type;
+          }
+
+          rows.push(`
+            <tr class="${active ? "active" : ""}">
+              <td class="tag">${escapeHtml(name)}</td>
+              <td>${active ? "<span class='oktext'>выбран</span>" : ""}</td>
+              <td>${escapeHtml(delay)}</td>
+              <td>${escapeHtml(note)}</td>
+              <td><button onclick="selectProxy('${escapeAttr(name)}')">Выбрать</button></td>
+            </tr>
+          `);
+        }
+
+        els.serversTable.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Сервер</th>
+                <th>Статус</th>
+                <th>Задержка</th>
+                <th>Комментарий</th>
+                <th>Действие</th>
+              </tr>
+            </thead>
+            <tbody>${rows.join("")}</tbody>
+          </table>
+        `;
+
+        setMessage("Данные обновлены.");
+      } catch (e) {
+        els.statusDot.classList.remove("ok");
+        els.statusText.textContent = "Ошибка";
+        setMessage(e.message || String(e), true);
+      }
+    }
+
+    async function selectProxy(name) {
+      try {
+        if (!selectedGroupName) throw new Error("Группа управления не выбрана.");
+
+        await api(`/proxies/${encodeURIComponent(selectedGroupName)}`, {
+          method: "PUT",
+          body: JSON.stringify({ name })
+        });
+
+        setMessage("Выбран режим/сервер: " + name);
+        await loadProxies();
+      } catch (e) {
+        setMessage(e.message || String(e), true);
+      }
+    }
+
+    async function testDelays() {
+      try {
+        setMessage("Проверяю задержки...");
+
+        const data = await api("/proxies");
+        const proxies = data.proxies || data;
+        const group = proxies[selectedGroupName] || proxies[chooseDefaultGroup(proxies)];
+
+        if (!group) throw new Error("Группа для проверки задержек не найдена.");
+
+        const names = proxyNames(group).filter(n => n !== "auto");
+
+        for (const name of names) {
+          try {
+            await api(`/proxies/${encodeURIComponent(name)}/delay?timeout=5000&url=${encodeURIComponent("https://www.gstatic.com/generate_204")}`);
+          } catch (_) {}
+        }
+
+        setMessage("Проверка задержек завершена.");
+        await loadProxies();
+      } catch (e) {
+        setMessage(e.message || String(e), true);
+      }
+    }
+
+    function extractConnections(data) {
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.connections)) return data.connections;
+      return [];
+    }
+
+    function updateTrafficCounter(connections) {
+      const traffic = loadJson(storageKeys.traffic, {
+        limitBytes: 0,
+        usedBytes: 0,
+        connBytes: {},
+        updatedAt: Date.now()
+      });
+
+      const alive = new Set();
+
+      for (const conn of connections) {
+        const id = getConnId(conn);
+        if (!id) continue;
+
+        alive.add(id);
+
+        const up = Number(conn.upload || 0);
+        const down = Number(conn.download || 0);
+        const total = up + down;
+
+        const prev = Number(traffic.connBytes[id] || 0);
+
+        if (total > prev) {
+          traffic.usedBytes += total - prev;
+          traffic.connBytes[id] = total;
+        }
+      }
+
+      for (const id of Object.keys(traffic.connBytes)) {
+        if (!alive.has(id)) delete traffic.connBytes[id];
+      }
+
+      traffic.updatedAt = Date.now();
+      saveJson(storageKeys.traffic, traffic);
+      renderTraffic();
+    }
+
+    async function geoLookup(ip) {
+      if (isPrivateIp(ip)) {
+        return { country: "Локальный", region: "LAN", city: "", isp: "" };
+      }
+
+      const geoCache = loadJson(storageKeys.geo, {});
+      if (geoCache[ip] && Date.now() - geoCache[ip].ts < 7 * 24 * 3600 * 1000) {
+        return geoCache[ip].data;
+      }
+
+      try {
+        const res = await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`, { cache: "force-cache" });
+        const data = await res.json();
+
+        const info = data && data.success !== false ? {
+          country: data.country || "—",
+          region: data.region || "—",
+          city: data.city || "",
+          isp: data.connection?.isp || data.connection?.org || ""
+        } : {
+          country: "—",
+          region: "—",
+          city: "",
+          isp: ""
+        };
+
+        geoCache[ip] = { ts: Date.now(), data: info };
+        saveJson(storageKeys.geo, geoCache);
+
+        return info;
+      } catch (_) {
+        return { country: "—", region: "—", city: "", isp: "" };
+      }
+    }
+
+    async function buildClients(connections) {
+      const oldStats = loadJson(storageKeys.clients, {});
+      const now = Date.now();
+      const grouped = {};
+
+      for (const conn of connections) {
+        const ip = getSourceIP(conn);
+        if (!grouped[ip]) {
+          grouped[ip] = {
+            ip,
+            connections: [],
+            upload: 0,
+            download: 0,
+            hosts: new Set(),
+            firstSeen: oldStats[ip]?.firstSeen || now,
+            lastSeen: now
+          };
+        }
+
+        grouped[ip].connections.push(conn);
+        grouped[ip].upload += Number(conn.upload || 0);
+        grouped[ip].download += Number(conn.download || 0);
+
+        const host = getHost(conn);
+        const port = getDestinationPort(conn);
+        if (host && host !== "—") {
+          grouped[ip].hosts.add(port ? `${host}:${port}` : host);
+        }
+      }
+
+      for (const ip of Object.keys(grouped)) {
+        oldStats[ip] = {
+          firstSeen: grouped[ip].firstSeen,
+          lastSeen: grouped[ip].lastSeen
+        };
+      }
+
+      saveJson(storageKeys.clients, oldStats);
+
+      const result = [];
+
+      for (const ip of Object.keys(grouped)) {
+        const geo = await geoLookup(ip);
+        result.push({
+          ...grouped[ip],
+          hosts: Array.from(grouped[ip].hosts).slice(0, 8),
+          geo
+        });
+      }
+
+      return result.sort((a, b) => b.connections.length - a.connections.length);
+    }
+
+    async function loadConnections() {
+      try {
+        const data = await api("/connections");
+        const connections = extractConnections(data);
+        lastConnections = connections;
+
+        updateTrafficCounter(connections);
+
+        let totalUpload = 0;
+        let totalDownload = 0;
+        const clientsSet = new Set();
+
+        for (const conn of connections) {
+          clientsSet.add(getSourceIP(conn));
+          totalUpload += Number(conn.upload || 0);
+          totalDownload += Number(conn.download || 0);
+        }
+
+        els.connectionsCount.textContent = String(connections.length);
+        els.clientsCount.textContent = String(clientsSet.size);
+        els.downloadTotal.textContent = formatBytes(totalDownload);
+        els.uploadTotal.textContent = formatBytes(totalUpload);
+        els.connectionsUpdatedAt.textContent = "Последнее обновление: " + new Date().toLocaleString("ru-RU");
+
+        renderConnections(connections);
+        const clients = await buildClients(connections);
+        renderClients(clients);
+
+      } catch (e) {
+        els.connectionsCount.textContent = "—";
+        els.clientsCount.textContent = "—";
+        els.downloadTotal.textContent = "—";
+        els.uploadTotal.textContent = "—";
+        els.connectionsTable.innerHTML = `<div class="error" style="margin-top: 10px;">${escapeHtml(e.message || String(e))}</div>`;
+        els.clientsTable.innerHTML = `<div class="error" style="margin-top: 10px;">${escapeHtml(e.message || String(e))}</div>`;
+      }
+    }
+
+    function renderConnections(connections) {
+      const rows = connections.map(conn => {
+        const meta = conn.metadata || {};
+        const sourceIP = getSourceIP(conn);
+        const sourcePort = meta.sourcePort || meta.source_port || "";
+        const host = getHost(conn);
+        const destinationPort = getDestinationPort(conn);
+        const network = meta.network || conn.network || "—";
+        const upload = conn.upload || 0;
+        const download = conn.download || 0;
+        const chains = Array.isArray(conn.chains) ? conn.chains.join(" → ") : (conn.chains || "—");
+        const rule = conn.rule || "—";
+        const start = conn.start ? new Date(conn.start).getTime() : null;
+        const duration = start ? formatDurationMs(Date.now() - start) : "—";
+
+        const source = sourcePort ? `${sourceIP}:${sourcePort}` : sourceIP;
+        const destination = destinationPort ? `${host}:${destinationPort}` : host;
+
+        return `
+          <tr>
+            <td class="tag">${escapeHtml(source)}</td>
+            <td class="tag">${escapeHtml(destination)}</td>
+            <td>${escapeHtml(network)}</td>
+            <td>${escapeHtml(formatBytes(download))}</td>
+            <td>${escapeHtml(formatBytes(upload))}</td>
+            <td>${escapeHtml(duration)}</td>
+            <td class="tag">${escapeHtml(chains)}</td>
+            <td>${escapeHtml(rule)}</td>
+          </tr>
+        `;
+      });
+
+      if (rows.length === 0) {
+        els.connectionsTable.innerHTML = `<div class="small muted" style="margin-top: 10px;">Активных подключений сейчас нет.</div>`;
+        return;
+      }
+
+      els.connectionsTable.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Клиент</th>
+              <th>Сайт / адрес</th>
+              <th>Сеть</th>
+              <th>Download</th>
+              <th>Upload</th>
+              <th>Время</th>
+              <th>Маршрут</th>
+              <th>Правило</th>
+            </tr>
+          </thead>
+          <tbody>${rows.join("")}</tbody>
+        </table>
+      `;
+    }
+
+    function renderClients(clients) {
+      if (!clients.length) {
+        els.clientsTable.innerHTML = `<div class="small muted" style="margin-top: 10px;">Активных клиентов сейчас нет.</div>`;
+        return;
+      }
+
+      const rows = clients.map(client => {
+        const region = [client.geo.country, client.geo.region, client.geo.city].filter(Boolean).join(", ");
+        const session = formatDurationMs(Date.now() - client.firstSeen);
+        const hosts = client.hosts.length
+          ? client.hosts.map(h => `<span class="pill">${escapeHtml(h)}</span>`).join("")
+          : "—";
+
+        return `
+          <tr>
+            <td class="tag">${escapeHtml(client.ip)}</td>
+            <td>
+              <div>${escapeHtml(region || "—")}</div>
+              <div class="small muted">${escapeHtml(client.geo.isp || "")}</div>
+            </td>
+            <td>${escapeHtml(formatDateTime(client.firstSeen))}</td>
+            <td>${escapeHtml(formatDateTime(client.lastSeen))}</td>
+            <td>${escapeHtml(session)}</td>
+            <td>${client.connections.length}</td>
+            <td>${escapeHtml(formatBytes(client.download))}</td>
+            <td>${escapeHtml(formatBytes(client.upload))}</td>
+            <td class="sites">${hosts}</td>
+            <td>
+              <button class="danger" onclick="disconnectClient('${escapeAttr(client.ip)}')">Отключить</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      els.clientsTable.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>IP клиента</th>
+              <th>Гео / провайдер</th>
+              <th>Первое подключение</th>
+              <th>Последняя активность</th>
+              <th>Сеанс</th>
+              <th>Соединений</th>
+              <th>Download</th>
+              <th>Upload</th>
+              <th>Сайты / адреса</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody>${rows.join("")}</tbody>
+        </table>
+      `;
+    }
+
+    async function disconnectClient(ip) {
+      try {
+        const data = await api("/connections");
+        const connections = extractConnections(data);
+        const target = connections.filter(conn => getSourceIP(conn) === ip);
+
+        if (!target.length) {
+          setMessage("У клиента уже нет активных соединений: " + ip);
+          await loadConnections();
+          return;
+        }
+
+        let closed = 0;
+
+        for (const conn of target) {
+          const id = getConnId(conn);
+          if (!id) continue;
+
+          try {
+            await api(`/connections/${encodeURIComponent(id)}`, { method: "DELETE" });
+            closed++;
+          } catch (_) {}
+        }
+
+        setMessage(`Клиент ${ip}: закрыто соединений ${closed} из ${target.length}.`);
+        await loadConnections();
+      } catch (e) {
+        setMessage(e.message || String(e), true);
+      }
+    }
+
+    async function closeAllConnections() {
+      try {
+        setMessage("Закрываю все соединения...");
+        await api("/connections", { method: "DELETE" });
+        await new Promise(resolve => setTimeout(resolve, 700));
+        await loadConnections();
+        setMessage("Команда отключения всех соединений отправлена.");
+      } catch (e) {
+        setMessage(e.message || String(e), true);
+      }
+    }
+
+    function renderTraffic() {
+      const traffic = loadJson(storageKeys.traffic, {
+        limitBytes: 0,
+        usedBytes: 0,
+        connBytes: {},
+        updatedAt: Date.now()
+      });
+
+      const limit = Number(traffic.limitBytes || 0);
+      const used = Number(traffic.usedBytes || 0);
+      const left = Math.max(0, limit - used);
+      const percent = limit > 0 ? Math.min(100, (used / limit) * 100) : 0;
+
+      els.trafficLimit.textContent = limit > 0 ? formatBytes(limit) : "не задан";
+      els.trafficUsed.textContent = formatBytes(used);
+      els.trafficLeft.textContent = limit > 0 ? formatBytes(left) : "—";
+      els.trafficPercent.textContent = limit > 0 ? percent.toFixed(1) + "%" : "—";
+      els.trafficProgress.style.width = percent + "%";
+
+      els.trafficUsedShort.textContent = formatBytes(used);
+      els.trafficLeftShort.textContent = limit > 0 ? formatBytes(left) : "—";
+
+      els.trafficLimitInput.value = limit > 0 ? bytesToGb(limit).toFixed(2) : "";
+      els.trafficUsedInput.value = used > 0 ? bytesToGb(used).toFixed(2) : "";
+
+      els.trafficNote.textContent = "Последнее обновление счётчика: " + formatDateTime(traffic.updatedAt);
+    }
+
+    function saveTrafficSettings() {
+      const limitGb = Number(els.trafficLimitInput.value || 0);
+      const usedGb = Number(els.trafficUsedInput.value || 0);
+
+      const traffic = loadJson(storageKeys.traffic, {
+        limitBytes: 0,
+        usedBytes: 0,
+        connBytes: {},
+        updatedAt: Date.now()
+      });
+
+      traffic.limitBytes = gbToBytes(limitGb);
+      traffic.usedBytes = gbToBytes(usedGb);
+      traffic.updatedAt = Date.now();
+
+      saveJson(storageKeys.traffic, traffic);
+      renderTraffic();
+      setMessage("Настройки лимита трафика сохранены.");
+    }
+
+    function resetTraffic() {
+      const traffic = loadJson(storageKeys.traffic, {
+        limitBytes: 0,
+        usedBytes: 0,
+        connBytes: {},
+        updatedAt: Date.now()
+      });
+
+      traffic.usedBytes = 0;
+      traffic.connBytes = {};
+      traffic.updatedAt = Date.now();
+
+      saveJson(storageKeys.traffic, traffic);
+      renderTraffic();
+      setMessage("Счётчик трафика сброшен.");
+    }
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+
+        btn.classList.add("active");
+        document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+      });
     });
 
-    document.getElementById("applyBtn").addEventListener("click", () => {
-      selectProxy(proxySelect.value);
+    els.groupSelect.addEventListener("change", async () => {
+      selectedGroupName = els.groupSelect.value;
+      await loadProxies();
     });
 
+    document.getElementById("applyBtn").addEventListener("click", () => selectProxy(els.proxySelect.value));
     document.getElementById("refreshBtn").addEventListener("click", async () => {
-      await load();
+      await loadProxies();
       await loadConnections();
     });
-
     document.getElementById("delayBtn").addEventListener("click", testDelays);
     document.getElementById("refreshConnectionsBtn").addEventListener("click", loadConnections);
+    document.getElementById("refreshClientsBtn").addEventListener("click", loadConnections);
+    document.getElementById("closeAllBtn").addEventListener("click", closeAllConnections);
+    document.getElementById("closeAllBtn2").addEventListener("click", closeAllConnections);
+    document.getElementById("saveTrafficBtn").addEventListener("click", saveTrafficSettings);
+    document.getElementById("resetTrafficBtn").addEventListener("click", resetTraffic);
 
-    load();
+    loadProxies();
     loadConnections();
+    renderTraffic();
 
-    setInterval(load, 30000);
+    setInterval(loadProxies, 30000);
     setInterval(loadConnections, 5000);
   </script>
 </body>
