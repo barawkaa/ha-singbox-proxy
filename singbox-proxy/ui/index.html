@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sing-box Proxy</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: dark;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      background: #111827;
+      color: #e5e7eb;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .muted {
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .card {
+      background: #1f2937;
+      border: 1px solid #374151;
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,.18);
+      overflow: hidden;
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    button, select {
+      border: 1px solid #4b5563;
+      background: #111827;
+      color: #e5e7eb;
+      border-radius: 10px;
+      padding: 9px 11px;
+      font-size: 14px;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0b1220;
+    }
+
+    button.primary {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: white;
+    }
+
+    button.primary:hover {
+      background: #1d4ed8;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 8px 0;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #374151;
+      font-size: 13px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+    }
+
+    .dot.ok {
+      background: #22c55e;
+    }
+
+    .api-url {
+      margin-top: 8px;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      line-height: 1.35;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    th, td {
+      border-bottom: 1px solid #374151;
+      padding: 9px;
+      text-align: left;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    th {
+      color: #9ca3af;
+      font-weight: 600;
+    }
+
+    tr.active td {
+      background: rgba(37, 99, 235, .18);
+    }
+
+    .tag {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .error {
+      color: #fca5a5;
+      white-space: pre-wrap;
+    }
+
+    .oktext {
+      color: #86efac;
+    }
+
+    .small {
+      font-size: 13px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    code {
+      background: #111827;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 2px 5px;
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .stat {
+      background: #111827;
+      border: 1px solid #374151;
+      border-radius: 12px;
+      padding: 8px 10px;
+      min-width: 120px;
+    }
+
+    .stat .label {
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    .stat .value {
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Sing-box Proxy</h1>
+    <div class="muted">
+      Встроенная панель управления sing-box через Home Assistant Ingress.
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Статус</h2>
+        <div class="row">
+          <span class="status">
+            <span id="statusDot" class="dot"></span>
+            <span id="statusText">Проверка...</span>
+          </span>
+        </div>
+        <div class="small muted api-url" id="apiBase"></div>
+      </div>
+
+      <div class="card">
+        <h2>Группа управления</h2>
+        <div class="row">
+          <label for="groupSelect">Группа:</label>
+          <select id="groupSelect"></select>
+        </div>
+        <div class="small muted">
+          Обычно это <code>Proxy</code> или <code>GLOBAL</code>. Интерфейс выберет подходящую группу автоматически.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Основной режим</h2>
+        <div class="row">
+          <label for="proxySelect">Выбор:</label>
+          <select id="proxySelect"></select>
+        </div>
+        <div class="row">
+          <button class="primary" id="applyBtn">Применить</button>
+          <button id="refreshBtn">Обновить</button>
+          <button id="delayBtn">Проверить задержки</button>
+        </div>
+        <div class="small muted">
+          <b>auto</b> — автоматический выбор лучшего сервера. Конкретный сервер — ручной режим.
+        </div>
+      </div>
+
+      <div class="card full">
+        <h2>Активные подключения</h2>
+        <div class="small muted">
+          Показываются текущие живые соединения через прокси. Закрытые соединения в этой версии не сохраняются в историю.
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <div class="label">Соединений</div>
+            <div class="value" id="connectionsCount">—</div>
+          </div>
+          <div class="stat">
+            <div class="label">Клиентов</div>
+            <div class="value" id="clientsCount">—</div>
+          </div>
+          <div class="stat">
+            <div class="label">Download</div>
+            <div class="value" id="downloadTotal">—</div>
+          </div>
+          <div class="stat">
+            <div class="label">Upload</div>
+            <div class="value" id="uploadTotal">—</div>
+          </div>
+        </div>
+        <div class="row">
+          <button id="refreshConnectionsBtn">Обновить подключения</button>
+        </div>
+        <div id="connectionsTable">Загрузка...</div>
+      </div>
+
+      <div class="card full">
+        <h2>Серверы</h2>
+        <div id="serversTable">Загрузка...</div>
+      </div>
+
+      <div class="card full">
+        <h2>Диагностика</h2>
+        <div id="diagnostics" class="muted">Загрузка...</div>
+      </div>
+
+      <div class="card full">
+        <h2>Сообщения</h2>
+        <div id="message" class="muted">Готово.</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    const config = window.SINGBOX_DASHBOARD_CONFIG || {};
+    const secret = config.secret || "";
+
+    function getApiBase() {
+      const path = window.location.pathname;
+      const marker = "/ui";
+      const idx = path.indexOf(marker);
+
+      if (idx >= 0) {
+        return window.location.origin + path.slice(0, idx);
+      }
+
+      return window.location.origin;
+    }
+
+    const apiBase = getApiBase();
+
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+    const apiBaseEl = document.getElementById("apiBase");
+    const groupSelect = document.getElementById("groupSelect");
+    const proxySelect = document.getElementById("proxySelect");
+    const serversTable = document.getElementById("serversTable");
+    const diagnostics = document.getElementById("diagnostics");
+    const message = document.getElementById("message");
+
+    const connectionsCount = document.getElementById("connectionsCount");
+    const clientsCount = document.getElementById("clientsCount");
+    const downloadTotal = document.getElementById("downloadTotal");
+    const uploadTotal = document.getElementById("uploadTotal");
+    const connectionsTable = document.getElementById("connectionsTable");
+
+    let selectedGroupName = "";
+
+    apiBaseEl.textContent = "API: " + apiBase;
+
+    function setMessage(text, isError = false) {
+      message.textContent = text;
+      message.className = isError ? "error" : "muted";
+    }
+
+    function headers() {
+      const h = { "Content-Type": "application/json" };
+      if (secret) h.Authorization = "Bearer " + secret;
+      return h;
+    }
+
+    async function api(path, options = {}) {
+      const res = await fetch(apiBase + path, {
+        ...options,
+        headers: {
+          ...headers(),
+          ...(options.headers || {})
+        }
+      });
+
+      const text = await res.text();
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
+      }
+
+      if (!text) {
+        return null;
+      }
+
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        throw new Error(
+          "API вернул не JSON, а текст. Первые символы ответа: " +
+          text.slice(0, 300)
+        );
+      }
+    }
+
+    function normalizeDelay(delay) {
+      if (delay === undefined || delay === null || delay === 0) return "—";
+      return delay + " мс";
+    }
+
+    function formatBytes(bytes) {
+      const n = Number(bytes || 0);
+
+      if (n < 1024) return n + " B";
+      if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+      if (n < 1024 * 1024 * 1024) return (n / 1024 / 1024).toFixed(1) + " MB";
+
+      return (n / 1024 / 1024 / 1024).toFixed(2) + " GB";
+    }
+
+    function formatDuration(start) {
+      if (!start) return "—";
+
+      const startMs = new Date(start).getTime();
+      if (!Number.isFinite(startMs)) return "—";
+
+      const sec = Math.max(0, Math.floor((Date.now() - startMs) / 1000));
+      if (sec < 60) return sec + " сек";
+      if (sec < 3600) return Math.floor(sec / 60) + " мин";
+
+      return Math.floor(sec / 3600) + " ч " + Math.floor((sec % 3600) / 60) + " мин";
+    }
+
+    function proxyNames(proxy) {
+      if (!proxy) return [];
+      if (Array.isArray(proxy.all)) return proxy.all;
+      if (Array.isArray(proxy.proxies)) return proxy.proxies;
+      return [];
+    }
+
+    function currentProxy(proxy) {
+      return proxy?.now || proxy?.selected || "";
+    }
+
+    function isGroup(proxy) {
+      const names = proxyNames(proxy);
+      return names.length > 0;
+    }
+
+    function chooseDefaultGroup(proxies) {
+      if (proxies.Proxy && isGroup(proxies.Proxy)) return "Proxy";
+      if (proxies.GLOBAL && isGroup(proxies.GLOBAL)) return "GLOBAL";
+
+      const groupNames = Object.keys(proxies).filter(name => {
+        if (name === "auto") return false;
+        return isGroup(proxies[name]);
+      });
+
+      if (groupNames.length > 0) return groupNames[0];
+
+      if (proxies.auto && isGroup(proxies.auto)) return "auto";
+
+      return "";
+    }
+
+    function renderGroupSelector(proxies) {
+      const groupNames = Object.keys(proxies).filter(name => isGroup(proxies[name]));
+
+      groupSelect.innerHTML = "";
+
+      for (const name of groupNames) {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        if (name === selectedGroupName) option.selected = true;
+        groupSelect.appendChild(option);
+      }
+
+      if (!selectedGroupName || !proxies[selectedGroupName]) {
+        selectedGroupName = chooseDefaultGroup(proxies);
+        groupSelect.value = selectedGroupName;
+      }
+    }
+
+    function renderDiagnostics(proxies, rawData) {
+      const keys = Object.keys(proxies);
+      const groups = keys.filter(name => isGroup(proxies[name]));
+
+      diagnostics.innerHTML = `
+        <div class="small">
+          <div>Тип ответа API: <b>${escapeHtml(typeof rawData)}</b></div>
+          <div>Найдено объектов в API: <b>${keys.length}</b></div>
+          <div>Группы: <b>${escapeHtml(groups.join(", ") || "не найдены")}</b></div>
+          <div>Текущая группа управления: <b>${escapeHtml(selectedGroupName || "не выбрана")}</b></div>
+          <div>Первые ключи API: <b>${escapeHtml(keys.slice(0, 20).join(", "))}</b></div>
+        </div>
+      `;
+    }
+
+    async function load() {
+      try {
+        const data = await api("/proxies");
+
+        let proxies;
+
+        if (data && data.proxies && typeof data.proxies === "object") {
+          proxies = data.proxies;
+        } else if (data && typeof data === "object") {
+          proxies = data;
+        } else {
+          throw new Error("API /proxies вернул неожиданный формат.");
+        }
+
+        if (!selectedGroupName) {
+          selectedGroupName = chooseDefaultGroup(proxies);
+        }
+
+        renderGroupSelector(proxies);
+        renderDiagnostics(proxies, data);
+
+        const group = proxies[selectedGroupName];
+
+        if (!group || !isGroup(group)) {
+          throw new Error("Не найдена подходящая группа управления. Смотри блок диагностики выше.");
+        }
+
+        statusDot.classList.add("ok");
+        statusText.textContent = "Подключено";
+
+        const names = proxyNames(group);
+        const selected = currentProxy(group);
+
+        proxySelect.innerHTML = "";
+
+        for (const name of names) {
+          const option = document.createElement("option");
+          option.value = name;
+          option.textContent = name;
+          if (name === selected) option.selected = true;
+          proxySelect.appendChild(option);
+        }
+
+        const rows = [];
+
+        for (const name of names) {
+          const item = proxies[name] || {};
+          const active = name === selected;
+          const delay = normalizeDelay(item.history?.[item.history.length - 1]?.delay ?? item.delay);
+
+          let note = "";
+
+          if (name === "auto" && proxies.auto) {
+            note = "выбран внутри auto: " + (currentProxy(proxies.auto) || "—");
+          } else if (item.type) {
+            note = item.type;
+          }
+
+          rows.push(`
+            <tr class="${active ? "active" : ""}">
+              <td class="tag">${escapeHtml(name)}</td>
+              <td>${active ? "<span class='oktext'>выбран</span>" : ""}</td>
+              <td>${escapeHtml(delay)}</td>
+              <td>${escapeHtml(note)}</td>
+              <td>
+                <button onclick="selectProxy('${escapeAttr(name)}')">Выбрать</button>
+              </td>
+            </tr>
+          `);
+        }
+
+        serversTable.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Сервер</th>
+                <th>Статус</th>
+                <th>Задержка</th>
+                <th>Комментарий</th>
+                <th>Действие</th>
+              </tr>
+            </thead>
+            <tbody>${rows.join("")}</tbody>
+          </table>
+        `;
+
+        setMessage("Данные обновлены.");
+      } catch (e) {
+        statusDot.classList.remove("ok");
+        statusText.textContent = "Ошибка";
+        setMessage(e.message || String(e), true);
+      }
+    }
+
+    async function selectProxy(name) {
+      try {
+        if (!selectedGroupName) {
+          throw new Error("Группа управления не выбрана.");
+        }
+
+        await api(`/proxies/${encodeURIComponent(selectedGroupName)}`, {
+          method: "PUT",
+          body: JSON.stringify({ name })
+        });
+
+        setMessage("Выбран режим/сервер: " + name);
+        await load();
+      } catch (e) {
+        setMessage(e.message || String(e), true);
+      }
+    }
+
+    async function testDelays() {
+      try {
+        setMessage("Проверяю задержки...");
+
+        const data = await api("/proxies");
+        const proxies = data.proxies || data;
+        const group = proxies[selectedGroupName] || proxies[chooseDefaultGroup(proxies)];
+
+        if (!group) {
+          throw new Error("Группа для проверки задержек не найдена.");
+        }
+
+        const names = proxyNames(group).filter(n => n !== "auto");
+
+        for (const name of names) {
+          try {
+            await api(`/proxies/${encodeURIComponent(name)}/delay?timeout=5000&url=${encodeURIComponent("https://www.gstatic.com/generate_204")}`);
+          } catch (_) {
+            // отдельный сервер может не ответить — это нормально
+          }
+        }
+
+        setMessage("Проверка задержек завершена.");
+        await load();
+      } catch (e) {
+        setMessage(e.message || String(e), true);
+      }
+    }
+
+    function extractConnections(data) {
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.connections)) return data.connections;
+      return [];
+    }
+
+    async function loadConnections() {
+      try {
+        const data = await api("/connections");
+        const connections = extractConnections(data);
+
+        const clients = new Set();
+        let totalUpload = 0;
+        let totalDownload = 0;
+
+        const rows = connections.map(conn => {
+          const meta = conn.metadata || {};
+          const sourceIP = meta.sourceIP || meta.source_ip || conn.source || conn.sourceIP || "—";
+          const sourcePort = meta.sourcePort || meta.source_port || "";
+          const host = meta.host || meta.domain || meta.destinationIP || meta.destination_ip || conn.host || "—";
+          const destinationPort = meta.destinationPort || meta.destination_port || "";
+          const network = meta.network || conn.network || "—";
+          const upload = conn.upload || 0;
+          const download = conn.download || 0;
+          const chains = Array.isArray(conn.chains) ? conn.chains.join(" → ") : (conn.chains || "—");
+          const rule = conn.rule || "—";
+          const duration = formatDuration(conn.start);
+
+          if (sourceIP !== "—") clients.add(sourceIP);
+
+          totalUpload += Number(upload || 0);
+          totalDownload += Number(download || 0);
+
+          const source = sourcePort ? `${sourceIP}:${sourcePort}` : sourceIP;
+          const destination = destinationPort ? `${host}:${destinationPort}` : host;
+
+          return `
+            <tr>
+              <td class="tag">${escapeHtml(source)}</td>
+              <td class="tag">${escapeHtml(destination)}</td>
+              <td>${escapeHtml(network)}</td>
+              <td>${escapeHtml(formatBytes(download))}</td>
+              <td>${escapeHtml(formatBytes(upload))}</td>
+              <td>${escapeHtml(duration)}</td>
+              <td class="tag">${escapeHtml(chains)}</td>
+              <td>${escapeHtml(rule)}</td>
+            </tr>
+          `;
+        });
+
+        connectionsCount.textContent = String(connections.length);
+        clientsCount.textContent = String(clients.size);
+        downloadTotal.textContent = formatBytes(totalDownload);
+        uploadTotal.textContent = formatBytes(totalUpload);
+
+        if (rows.length === 0) {
+          connectionsTable.innerHTML = `
+            <div class="small muted" style="margin-top: 10px;">
+              Активных подключений сейчас нет. Открой сайт или приложение через прокси и нажми «Обновить подключения».
+            </div>
+          `;
+          return;
+        }
+
+        connectionsTable.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Клиент</th>
+                <th>Сайт / адрес</th>
+                <th>Сеть</th>
+                <th>Download</th>
+                <th>Upload</th>
+                <th>Время</th>
+                <th>Маршрут</th>
+                <th>Правило</th>
+              </tr>
+            </thead>
+            <tbody>${rows.join("")}</tbody>
+          </table>
+        `;
+      } catch (e) {
+        connectionsCount.textContent = "—";
+        clientsCount.textContent = "—";
+        downloadTotal.textContent = "—";
+        uploadTotal.textContent = "—";
+        connectionsTable.innerHTML = `<div class="error" style="margin-top: 10px;">${escapeHtml(e.message || String(e))}</div>`;
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(str) {
+      return String(str ?? "")
+        .replaceAll("\\", "\\\\")
+        .replaceAll("'", "\\'");
+    }
+
+    groupSelect.addEventListener("change", async () => {
+      selectedGroupName = groupSelect.value;
+      await load();
+    });
+
+    document.getElementById("applyBtn").addEventListener("click", () => {
+      selectProxy(proxySelect.value);
+    });
+
+    document.getElementById("refreshBtn").addEventListener("click", async () => {
+      await load();
+      await loadConnections();
+    });
+
+    document.getElementById("delayBtn").addEventListener("click", testDelays);
+    document.getElementById("refreshConnectionsBtn").addEventListener("click", loadConnections);
+
+    load();
+    loadConnections();
+
+    setInterval(load, 30000);
+    setInterval(loadConnections, 5000);
+  </script>
+</body>
+</html>
