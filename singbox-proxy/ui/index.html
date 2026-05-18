@@ -17,8 +17,13 @@
       --blue: #2563eb;
       --blue2: #1d4ed8;
       --green: #22c55e;
+      --green-dark: #064e3b;
       --red: #ef4444;
-      --yellow: #fde68a;
+      --red-dark: #7f1d1d;
+      --yellow: #facc15;
+      --yellow-dark: #713f12;
+      --orange: #fb923c;
+      --purple: #a78bfa;
     }
 
     body {
@@ -29,13 +34,13 @@
     }
 
     .wrap {
-      max-width: 1280px;
+      max-width: 1380px;
       margin: 0 auto;
     }
 
     h1 {
       margin: 0 0 8px;
-      font-size: 24px;
+      font-size: 26px;
     }
 
     h2 {
@@ -115,7 +120,7 @@
     }
 
     input {
-      width: 140px;
+      width: 150px;
       box-sizing: border-box;
     }
 
@@ -138,13 +143,23 @@
     }
 
     button.danger {
-      background: #7f1d1d;
+      background: var(--red-dark);
       border-color: #991b1b;
       color: white;
     }
 
     button.danger:hover {
       background: #991b1b;
+    }
+
+    button.safe {
+      background: var(--green-dark);
+      border-color: #047857;
+      color: white;
+    }
+
+    button.safe:hover {
+      background: #047857;
     }
 
     .row {
@@ -209,6 +224,18 @@
       background: rgba(37, 99, 235, .18);
     }
 
+    tr.risk-high td {
+      background: rgba(127, 29, 29, .22);
+    }
+
+    tr.risk-medium td {
+      background: rgba(113, 63, 18, .18);
+    }
+
+    tr.trusted td {
+      background: rgba(6, 78, 59, .18);
+    }
+
     .tag {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 13px;
@@ -227,6 +254,10 @@
 
     .warntext {
       color: var(--yellow);
+    }
+
+    .dangertext {
+      color: #fca5a5;
     }
 
     code {
@@ -260,6 +291,7 @@
       font-size: 18px;
       font-weight: 700;
       margin-top: 2px;
+      overflow-wrap: anywhere;
     }
 
     .progress-wrap {
@@ -289,10 +321,78 @@
       background: var(--card2);
       font-size: 12px;
       margin: 2px 4px 2px 0;
+      white-space: nowrap;
+    }
+
+    .pill.green {
+      background: var(--green-dark);
+      border-color: #047857;
+      color: #d1fae5;
+    }
+
+    .pill.red {
+      background: var(--red-dark);
+      border-color: #991b1b;
+      color: #fee2e2;
+    }
+
+    .pill.yellow {
+      background: var(--yellow-dark);
+      border-color: #a16207;
+      color: #fef3c7;
+    }
+
+    .pill.blue {
+      background: #1e3a8a;
+      border-color: #2563eb;
+      color: #dbeafe;
+    }
+
+    .pill.purple {
+      background: #4c1d95;
+      border-color: #7c3aed;
+      color: #ede9fe;
     }
 
     .sites {
-      max-width: 360px;
+      max-width: 420px;
+    }
+
+    .client-title {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 150px;
+    }
+
+    .client-details {
+      line-height: 1.5;
+    }
+
+    .summary-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .summary-item {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .summary-item b {
+      display: block;
+      margin-bottom: 4px;
     }
   </style>
 </head>
@@ -379,6 +479,10 @@
               <div class="value" id="clientsCount">—</div>
             </div>
             <div class="stat">
+              <div class="label">Неизвестных клиентов</div>
+              <div class="value" id="unknownClientsCount">—</div>
+            </div>
+            <div class="stat">
               <div class="label">Download сейчас</div>
               <div class="value" id="downloadTotal">—</div>
             </div>
@@ -416,14 +520,37 @@
     <section id="tab-clients" class="tab">
       <div class="grid">
         <div class="card full">
-          <h2>Клиенты</h2>
+          <h2>Клиенты и контроль доступа</h2>
           <div class="small muted">
-            Клиенты группируются по IP-адресу. Геолокация определяется через внешний IP-сервис и может быть неточной.
+            Панель показывает активных и недавно отключившихся клиентов. Доверенные устройства сохраняются локально в браузере.
           </div>
+
+          <div class="summary-box">
+            <div class="summary-item">
+              <b>🟢 Доверенный</b>
+              Это IP, который ты вручную отметил как своё устройство.
+            </div>
+            <div class="summary-item">
+              <b>🟡 Новый</b>
+              IP появился впервые или недавно. Стоит проверить.
+            </div>
+            <div class="summary-item">
+              <b>🔴 Неизвестный публичный IP</b>
+              Потенциально чужое подключение, если это не твоё устройство.
+            </div>
+            <div class="summary-item">
+              <b>⚠️ Риск</b>
+              Много соединений, большой трафик или неизвестный публичный IP.
+            </div>
+          </div>
+
           <div class="row">
             <button id="refreshClientsBtn">Обновить клиентов</button>
             <button class="danger" id="closeAllBtn2">Отключить всех</button>
+            <button id="clearGeoCacheBtn">Очистить геокэш</button>
+            <button id="clearClientHistoryBtn">Очистить историю клиентов</button>
           </div>
+
           <div id="clientsTable">Загрузка...</div>
         </div>
 
@@ -499,10 +626,16 @@
     const config = window.SINGBOX_DASHBOARD_CONFIG || {};
     const secret = config.secret || "";
 
+    const SESSION_BREAK_MS = 60 * 1000;
+    const RECENT_CLIENT_MS = 5 * 60 * 1000;
+    const MANY_CONNECTIONS_THRESHOLD = 20;
+    const HIGH_ACTIVE_TRAFFIC_BYTES = 100 * 1024 * 1024;
+
     const storageKeys = {
-      clients: "singbox_proxy_clients_v1",
-      traffic: "singbox_proxy_traffic_v1",
-      geo: "singbox_proxy_geo_v2"
+      clients: "boris_proxy_clients_v3",
+      trusted: "boris_proxy_trusted_clients_v1",
+      traffic: "boris_proxy_traffic_v1",
+      geo: "boris_proxy_geo_v3"
     };
 
     function getApiBase() {
@@ -530,6 +663,7 @@
       message: document.getElementById("message"),
       connectionsCount: document.getElementById("connectionsCount"),
       clientsCount: document.getElementById("clientsCount"),
+      unknownClientsCount: document.getElementById("unknownClientsCount"),
       downloadTotal: document.getElementById("downloadTotal"),
       uploadTotal: document.getElementById("uploadTotal"),
       connectionsTable: document.getElementById("connectionsTable"),
@@ -722,8 +856,13 @@
              /^192\.168\./.test(ip) ||
              /^172\.(1[6-9]|2\d|3[0-1])\./.test(ip) ||
              /^127\./.test(ip) ||
+             /^169\.254\./.test(ip) ||
              ip === "localhost" ||
              ip === "—";
+    }
+
+    function isPublicIp(ip) {
+      return ip && ip !== "—" && !isPrivateIp(ip);
     }
 
     function renderGroupSelector(proxies) {
@@ -778,13 +917,15 @@
       const keys = Object.keys(proxies);
       const groups = keys.filter(name => isGroup(proxies[name]));
 
-      diagnostics.innerHTML = `
+      els.diagnostics.innerHTML = `
         <div class="small">
           <div>Тип ответа API: <b>${escapeHtml(typeof rawData)}</b></div>
           <div>Найдено объектов в API: <b>${keys.length}</b></div>
           <div>Группы: <b>${escapeHtml(groups.join(", ") || "не найдены")}</b></div>
           <div>Текущая группа управления: <b>${escapeHtml(selectedGroupName || "не выбрана")}</b></div>
           <div>Первые ключи API: <b>${escapeHtml(keys.slice(0, 20).join(", "))}</b></div>
+          <div>Сеанс считается новым, если клиент отсутствовал более <b>${SESSION_BREAK_MS / 1000} сек</b>.</div>
+          <div>Недавно отключившиеся клиенты показываются <b>${RECENT_CLIENT_MS / 1000 / 60} мин</b>.</div>
         </div>
       `;
     }
@@ -964,59 +1105,64 @@
       renderTraffic();
     }
 
-    async function geoLookupByIpWhoIs(ip) {
-      const res = await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`, { cache: "force-cache" });
-      const data = await res.json();
-
-      if (!data || data.success === false) {
-        throw new Error("ipwho.is не вернул геолокацию");
-      }
-
-      return {
-        country: data.country || "—",
-        region: data.region || "—",
-        city: data.city || "",
-        isp: data.connection?.isp || data.connection?.org || ""
-      };
-    }
-
-    async function geoLookupByIpApiCo(ip) {
-      const res = await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`, { cache: "force-cache" });
-      const data = await res.json();
-
-      if (!data || data.error) {
-        throw new Error("ipapi.co не вернул геолокацию");
-      }
-
-      return {
-        country: data.country_name || "—",
-        region: data.region || "—",
-        city: data.city || "",
-        isp: data.org || data.asn || ""
-      };
-    }
-
     async function geoLookup(ip) {
       if (isPrivateIp(ip)) {
-        return { country: "Локальный", region: "LAN", city: "", isp: "" };
+        return {
+          source: "local",
+          country: "Локальная сеть",
+          region: "LAN",
+          city: "",
+          isp: "",
+          org: "",
+          asn: "",
+          timezone: "",
+          latitude: "",
+          longitude: ""
+        };
       }
 
       const geoCache = loadJson(storageKeys.geo, {});
 
-      if (geoCache[ip] && Date.now() - geoCache[ip].ts < 7 * 24 * 3600 * 1000) {
+      if (geoCache[ip] && Date.now() - geoCache[ip].ts < 24 * 3600 * 1000) {
         return geoCache[ip].data;
       }
 
-      let info;
+      let info = {
+        source: "ipapi.co",
+        country: "—",
+        region: "—",
+        city: "",
+        isp: "геолокация недоступна",
+        org: "",
+        asn: "",
+        timezone: "",
+        latitude: "",
+        longitude: ""
+      };
 
       try {
-        info = await geoLookupByIpWhoIs(ip);
-      } catch (_) {
-        try {
-          info = await geoLookupByIpApiCo(ip);
-        } catch (_) {
-          info = { country: "—", region: "—", city: "", isp: "геолокация недоступна" };
+        const res = await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`, { cache: "no-store" });
+        const data = await res.json();
+
+        if (!data || data.error) {
+          throw new Error(data?.reason || "ipapi.co error");
         }
+
+        info = {
+          source: "ipapi.co",
+          country: data.country_name || "—",
+          region: data.region || "—",
+          city: data.city || "",
+          isp: data.org || "",
+          org: data.org || "",
+          asn: data.asn || "",
+          timezone: data.timezone || "",
+          latitude: data.latitude || "",
+          longitude: data.longitude || ""
+        };
+      } catch (e) {
+        info.isError = true;
+        info.error = e.message || String(e);
       }
 
       geoCache[ip] = { ts: Date.now(), data: info };
@@ -1025,22 +1171,119 @@
       return info;
     }
 
+    function getTrustedClients() {
+      return loadJson(storageKeys.trusted, {});
+    }
+
+    function saveTrustedClients(data) {
+      saveJson(storageKeys.trusted, data);
+    }
+
+    function markClientTrusted(ip) {
+      const trusted = getTrustedClients();
+      const currentName = trusted[ip]?.name || "";
+      const name = prompt("Название устройства:", currentName || "Моё устройство");
+
+      if (!name) return;
+
+      trusted[ip] = {
+        name,
+        trustedAt: Date.now()
+      };
+
+      saveTrustedClients(trusted);
+      setMessage("Клиент отмечен как доверенный: " + ip);
+      loadConnections();
+    }
+
+    function unmarkClientTrusted(ip) {
+      const trusted = getTrustedClients();
+      delete trusted[ip];
+      saveTrustedClients(trusted);
+      setMessage("Клиент убран из доверенных: " + ip);
+      loadConnections();
+    }
+
+    function getRiskLevel(client) {
+      if (client.trusted) return "trusted";
+
+      if (client.isPublic && !client.trusted) return "high";
+
+      if (client.connections.length >= MANY_CONNECTIONS_THRESHOLD) return "medium";
+
+      if ((client.upload + client.download) >= HIGH_ACTIVE_TRAFFIC_BYTES) return "medium";
+
+      if (client.isNew) return "medium";
+
+      return "low";
+    }
+
+    function getRiskLabels(client) {
+      const labels = [];
+
+      if (client.trusted) {
+        labels.push({ cls: "green", text: "Доверенный" });
+      } else {
+        labels.push({ cls: "red", text: "Неизвестный" });
+      }
+
+      if (client.isPublic) {
+        labels.push({ cls: client.trusted ? "blue" : "red", text: "Публичный IP" });
+      } else {
+        labels.push({ cls: "blue", text: "Локальный IP" });
+      }
+
+      if (client.isNew) {
+        labels.push({ cls: "yellow", text: "Новый клиент" });
+      }
+
+      if (client.connections.length >= MANY_CONNECTIONS_THRESHOLD) {
+        labels.push({ cls: "yellow", text: "Много соединений" });
+      }
+
+      if ((client.upload + client.download) >= HIGH_ACTIVE_TRAFFIC_BYTES) {
+        labels.push({ cls: "yellow", text: "Высокий трафик" });
+      }
+
+      if (client.status === "online") {
+        labels.push({ cls: "green", text: "Онлайн" });
+      } else {
+        labels.push({ cls: "yellow", text: "Недавно отключился" });
+      }
+
+      return labels;
+    }
+
     async function buildClients(connections) {
-      const oldStats = loadJson(storageKeys.clients, {});
       const now = Date.now();
+      const oldStats = loadJson(storageKeys.clients, {});
+      const trusted = getTrustedClients();
       const grouped = {};
 
       for (const conn of connections) {
         const ip = getSourceIP(conn);
+
         if (!grouped[ip]) {
+          const old = oldStats[ip] || {};
+          const wasOfflineLong = old.lastSeen && (now - old.lastSeen > SESSION_BREAK_MS);
+          const isFirstTime = !old.firstSeen;
+
           grouped[ip] = {
             ip,
+            status: "online",
             connections: [],
             upload: 0,
             download: 0,
             hosts: new Set(),
-            firstSeen: oldStats[ip]?.firstSeen || now,
-            lastSeen: now
+            firstSeenEver: old.firstSeen || now,
+            sessionStartedAt: isFirstTime || wasOfflineLong ? now : (old.sessionStartedAt || now),
+            lastSeen: now,
+            seenCount: isFirstTime ? 1 : (wasOfflineLong ? Number(old.seenCount || 1) + 1 : Number(old.seenCount || 1)),
+            isNew: isFirstTime,
+            trusted: Boolean(trusted[ip]),
+            trustedName: trusted[ip]?.name || "",
+            trustedAt: trusted[ip]?.trustedAt || null,
+            isPublic: isPublicIp(ip)
           };
         }
 
@@ -1057,8 +1300,37 @@
 
       for (const ip of Object.keys(grouped)) {
         oldStats[ip] = {
-          firstSeen: grouped[ip].firstSeen,
-          lastSeen: grouped[ip].lastSeen
+          firstSeen: grouped[ip].firstSeenEver,
+          sessionStartedAt: grouped[ip].sessionStartedAt,
+          lastSeen: grouped[ip].lastSeen,
+          seenCount: grouped[ip].seenCount
+        };
+      }
+
+      const activeIps = new Set(Object.keys(grouped));
+
+      for (const ip of Object.keys(oldStats)) {
+        if (activeIps.has(ip)) continue;
+
+        const old = oldStats[ip];
+        if (!old.lastSeen || now - old.lastSeen > RECENT_CLIENT_MS) continue;
+
+        grouped[ip] = {
+          ip,
+          status: "recent",
+          connections: [],
+          upload: 0,
+          download: 0,
+          hosts: new Set(),
+          firstSeenEver: old.firstSeen || old.lastSeen,
+          sessionStartedAt: old.sessionStartedAt || old.lastSeen,
+          lastSeen: old.lastSeen,
+          seenCount: Number(old.seenCount || 1),
+          isNew: false,
+          trusted: Boolean(trusted[ip]),
+          trustedName: trusted[ip]?.name || "",
+          trustedAt: trusted[ip]?.trustedAt || null,
+          isPublic: isPublicIp(ip)
         };
       }
 
@@ -1070,12 +1342,16 @@
         const geo = await geoLookup(ip);
         result.push({
           ...grouped[ip],
-          hosts: Array.from(grouped[ip].hosts).slice(0, 8),
+          hosts: Array.from(grouped[ip].hosts).slice(0, 10),
           geo
         });
       }
 
-      return result.sort((a, b) => b.connections.length - a.connections.length);
+      return result.sort((a, b) => {
+        if (a.status !== b.status) return a.status === "online" ? -1 : 1;
+        if (a.trusted !== b.trusted) return a.trusted ? 1 : -1;
+        return b.lastSeen - a.lastSeen;
+      });
     }
 
     async function loadConnections() {
@@ -1103,12 +1379,17 @@
         els.connectionsUpdatedAt.textContent = "Последнее обновление: " + new Date().toLocaleString("ru-RU");
 
         renderConnections(connections);
+
         const clients = await buildClients(connections);
         renderClients(clients);
+
+        const unknownOnline = clients.filter(c => c.status === "online" && !c.trusted).length;
+        els.unknownClientsCount.textContent = String(unknownOnline);
 
       } catch (e) {
         els.connectionsCount.textContent = "—";
         els.clientsCount.textContent = "—";
+        els.unknownClientsCount.textContent = "—";
         els.downloadTotal.textContent = "—";
         els.uploadTotal.textContent = "—";
         els.connectionsTable.innerHTML = `<div class="error" style="margin-top: 10px;">${escapeHtml(e.message || String(e))}</div>`;
@@ -1174,33 +1455,92 @@
 
     function renderClients(clients) {
       if (!clients.length) {
-        els.clientsTable.innerHTML = `<div class="small muted" style="margin-top: 10px;">Активных клиентов сейчас нет.</div>`;
+        els.clientsTable.innerHTML = `<div class="small muted" style="margin-top: 10px;">Активных и недавно отключившихся клиентов сейчас нет.</div>`;
         return;
       }
 
       const rows = clients.map(client => {
         const region = [client.geo.country, client.geo.region, client.geo.city].filter(Boolean).join(", ");
-        const session = formatDurationMs(Date.now() - client.firstSeen);
+        const session = client.status === "online"
+          ? formatDurationMs(Date.now() - client.sessionStartedAt)
+          : "завершён";
+
+        const activeTraffic = client.upload + client.download;
         const hosts = client.hosts.length
           ? client.hosts.map(h => `<span class="pill">${escapeHtml(h)}</span>`).join("")
           : "—";
 
+        const labels = getRiskLabels(client)
+          .map(label => `<span class="pill ${label.cls}">${escapeHtml(label.text)}</span>`)
+          .join("");
+
+        const risk = getRiskLevel(client);
+        const rowClass = risk === "trusted" ? "trusted" : (risk === "high" ? "risk-high" : (risk === "medium" ? "risk-medium" : ""));
+
+        const geoError = client.geo.isError
+          ? `<div class="small dangertext">Ошибка гео: ${escapeHtml(client.geo.error || "неизвестно")}</div>`
+          : "";
+
+        const geoDetails = `
+          <div>${escapeHtml(region || "—")}</div>
+          <div class="small muted">Провайдер/организация: ${escapeHtml(client.geo.isp || client.geo.org || "—")}</div>
+          <div class="small muted">ASN: ${escapeHtml(client.geo.asn || "—")}</div>
+          <div class="small muted">Часовой пояс: ${escapeHtml(client.geo.timezone || "—")}</div>
+          <div class="small muted">Координаты: ${escapeHtml(client.geo.latitude || "—")}, ${escapeHtml(client.geo.longitude || "—")}</div>
+          <div class="small muted">Источник гео: ${escapeHtml(client.geo.source || "—")}</div>
+          ${geoError}
+        `;
+
+        const trustedInfo = client.trusted
+          ? `<div class="oktext">Устройство: ${escapeHtml(client.trustedName || "доверенное")}</div>
+             <div class="small muted">Добавлено: ${escapeHtml(formatDateTime(client.trustedAt))}</div>`
+          : `<div class="dangertext">Неизвестный клиент</div>`;
+
+        const actions = client.trusted
+          ? `<button class="danger" onclick="unmarkClientTrusted('${escapeAttr(client.ip)}')">Убрать из доверенных</button>`
+          : `<button class="safe" onclick="markClientTrusted('${escapeAttr(client.ip)}')">Это моё устройство</button>`;
+
         return `
-          <tr>
-            <td class="tag">${escapeHtml(client.ip)}</td>
+          <tr class="${rowClass}">
             <td>
-              <div>${escapeHtml(region || "—")}</div>
-              <div class="small muted">${escapeHtml(client.geo.isp || "")}</div>
+              <div class="client-title">
+                <span class="tag">${escapeHtml(client.ip)}</span>
+              </div>
+              <div style="margin-top: 6px;">${labels}</div>
+              <div class="small muted" style="margin-top: 6px;">
+                Тип IP: ${client.isPublic ? "публичный" : "локальный/служебный"}
+              </div>
+              <div class="small muted">
+                Появлений: ${client.seenCount}
+              </div>
             </td>
-            <td>${escapeHtml(formatDateTime(client.firstSeen))}</td>
-            <td>${escapeHtml(formatDateTime(client.lastSeen))}</td>
-            <td>${escapeHtml(session)}</td>
-            <td>${client.connections.length}</td>
-            <td>${escapeHtml(formatBytes(client.download))}</td>
-            <td>${escapeHtml(formatBytes(client.upload))}</td>
-            <td class="sites">${hosts}</td>
+            <td class="client-details">
+              ${trustedInfo}
+            </td>
+            <td class="client-details">
+              ${geoDetails}
+            </td>
+            <td class="client-details">
+              <div>Статус: <b>${client.status === "online" ? "онлайн" : "недавно отключился"}</b></div>
+              <div>Первое появление: ${escapeHtml(formatDateTime(client.firstSeenEver))}</div>
+              <div>Сеанс начат: ${escapeHtml(formatDateTime(client.sessionStartedAt))}</div>
+              <div>Последняя активность: ${escapeHtml(formatDateTime(client.lastSeen))}</div>
+              <div>Текущий сеанс: ${escapeHtml(session)}</div>
+            </td>
+            <td class="client-details">
+              <div>Соединений сейчас: <b>${client.connections.length}</b></div>
+              <div>Download сейчас: ${escapeHtml(formatBytes(client.download))}</div>
+              <div>Upload сейчас: ${escapeHtml(formatBytes(client.upload))}</div>
+              <div>Активный трафик: ${escapeHtml(formatBytes(activeTraffic))}</div>
+            </td>
+            <td class="sites">
+              ${hosts}
+            </td>
             <td>
-              <button class="danger" onclick="disconnectClient('${escapeAttr(client.ip)}')">Отключить</button>
+              <div class="actions">
+                <button class="danger" onclick="disconnectClient('${escapeAttr(client.ip)}')">Отключить клиента</button>
+                ${actions}
+              </div>
             </td>
           </tr>
         `;
@@ -1210,14 +1550,11 @@
         <table>
           <thead>
             <tr>
-              <th>IP клиента</th>
-              <th>Гео / провайдер</th>
-              <th>Первое подключение</th>
-              <th>Последняя активность</th>
+              <th>Клиент</th>
+              <th>Доверие</th>
+              <th>Геолокация / сеть</th>
               <th>Сеанс</th>
-              <th>Соединений</th>
-              <th>Download</th>
-              <th>Upload</th>
+              <th>Трафик сейчас</th>
               <th>Сайты / адреса</th>
               <th>Действие</th>
             </tr>
@@ -1268,6 +1605,22 @@
       } catch (e) {
         setMessage(e.message || String(e), true);
       }
+    }
+
+    function clearGeoCache() {
+      localStorage.removeItem(storageKeys.geo);
+      setMessage("Геокэш очищен. Геолокация будет определена заново.");
+      loadConnections();
+    }
+
+    function clearClientHistory() {
+      if (!confirm("Очистить историю клиентов и доверенные устройства в этом браузере?")) return;
+
+      localStorage.removeItem(storageKeys.clients);
+      localStorage.removeItem(storageKeys.trusted);
+
+      setMessage("История клиентов очищена.");
+      loadConnections();
     }
 
     function renderTraffic() {
@@ -1361,6 +1714,8 @@
     document.getElementById("refreshClientsBtn").addEventListener("click", loadConnections);
     document.getElementById("closeAllBtn").addEventListener("click", closeAllConnections);
     document.getElementById("closeAllBtn2").addEventListener("click", closeAllConnections);
+    document.getElementById("clearGeoCacheBtn").addEventListener("click", clearGeoCache);
+    document.getElementById("clearClientHistoryBtn").addEventListener("click", clearClientHistory);
     document.getElementById("saveTrafficBtn").addEventListener("click", saveTrafficSettings);
     document.getElementById("resetTrafficBtn").addEventListener("click", resetTraffic);
 
